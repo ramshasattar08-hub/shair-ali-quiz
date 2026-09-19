@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shair Ali Quiz Muqabla</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#081b33,#123d68,#0b2440);color:#fff;min-height:100vh}
+.wrap{max-width:900px;margin:auto;padding:25px 16px}.card{background:rgba(255,255,255,.1);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18);border-radius:25px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.logo{text-align:center;font-size:34px;font-weight:800;color:#ffd45a}.sub{text-align:center;color:#d8e7f5;margin-bottom:25px}
+input,select,button{width:100%;padding:14px 16px;border-radius:13px;border:0;font-size:16px;margin:7px 0}input,select{background:#fff;color:#122}.btn{background:#ffc83d;color:#132238;font-weight:800;cursor:pointer}.btn:hover{filter:brightness(1.08)}
+.hidden{display:none}.top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:15px}.timer{font-size:24px;font-weight:800;color:#ffd45a}.progress{height:9px;background:rgba(255,255,255,.2);border-radius:10px;overflow:hidden}.bar{height:100%;background:#ffd04a;width:0;transition:.2s}
+.qimg{width:100%;height:260px;object-fit:cover;border-radius:18px;margin:18px 0}.question{font-size:25px;font-weight:700;line-height:1.35;margin:10px 0 18px}.option{background:#fff;color:#142235;text-align:left;font-weight:700;cursor:pointer}.option.correct{background:#21c66d!important;color:#fff}.option.wrong{background:#ef4b4b!important;color:#fff}.option:disabled{cursor:not-allowed;opacity:1}
+.feedback{text-align:center;font-weight:800;min-height:28px;margin:8px}.result{text-align:center}.score{font-size:58px;color:#ffd45a;font-weight:900}.small{color:#cfe0ef}.footer{text-align:center;margin-top:15px;color:#aac4da;font-size:13px}
+@media(max-width:600px){.logo{font-size:27px}.question{font-size:20px}.qimg{height:190px}.card{padding:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<div class="logo">🏆 SHAIR ALI QUIZ MUQABALA</div>
+<div class="sub">50 Interesting Questions • 10 Seconds Each</div>
+
+<section id="start">
+<label>Name</label><input id="name" placeholder="Enter your name">
+<label>Age (15+)</label><input id="age" type="number" min="15" placeholder="Enter your age">
+<label>Language</label>
+<select id="lang"><option value="en">🇬🇧 English</option><option value="ur">🇵🇰 اردو</option><option value="ar">🇸🇦 العربية</option><option value="fr">🇫🇷 Français</option></select>
+<button class="btn" onclick="startQuiz()">START QUIZ 🚀</button>
+</section>
+
+<section id="quiz" class="hidden">
+<div class="top"><b id="counter">Question 1 / 50</b><div class="timer">⏱️ <span id="time">10</span>s</div></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<img id="qimg" class="qimg" alt="Question image">
+<div id="question" class="question"></div>
+<div id="options"></div><div id="feedback" class="feedback"></div>
+</section>
+
+<section id="result" class="hidden result">
+<h2>🎉 Quiz Complete!</h2><p id="hello"></p><div class="score" id="score"></div>
+<p id="details"></p><button class="btn" onclick="location.reload()">PLAY AGAIN 🔄</button>
+</section>
+<div class="footer">Shair Ali Quiz Muqabla • Challenge your mind!</div>
+</div>
+</div>
+
+<script>
+const Q=[
+["Which planet is known as the Red Planet?","Mars","Earth","Jupiter","Venus","https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=1200&q=80"],
+["What is the fastest land animal?","Cheetah","Lion","Horse","Tiger","https://images.unsplash.com/photo-1554990772-0bea55d510d5?auto=format&fit=crop&w=1200&q=80"],
+["Which ocean is the largest?","Pacific Ocean","Atlantic Ocean","Indian Ocean","Arctic Ocean","https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"],
+["How many hearts does an octopus have?","3","1","2","4","https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80"],
+["Which animal is famous for changing its color?","Chameleon","Penguin","Elephant","Giraffe","https://images.unsplash.com/photo-1531386151447-fd76ad50012f?auto=format&fit=crop&w=1200&q=80"],
+["What is the capital of Pakistan?","Islamabad","Lahore","Karachi","Peshawar","https://images.unsplash.com/photo-1589891684530-1b9b8a6b5c3d?auto=format&fit=crop&w=1200&q=80"],
+["Which gas do humans need to breathe?","Oxygen","Helium","Hydrogen","Carbon dioxide","https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=1200&q=80"],
+["What is the largest mammal?","Blue whale","Elephant","Giraffe","Hippopotamus","https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=1200&q=80"],
+["Which country is shaped like a boot?","Italy","Spain","Greece","Portugal","https://images.unsplash.com/photo-1529260830199-42c24126f198?auto=format&fit=crop&w=1200&q=80"],
+["What do bees collect from flowers?","Nectar","Milk","Salt","Sand","https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=1200&q=80"],
+["Which is the smallest planet in our solar system?","Mercury","Mars","Venus","Neptune","https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&w=1200&q=80"],
+["What is H2O commonly called?","Water","Oxygen","Salt","Hydrogen","https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1200&q=80"],
+["Which bird cannot fly?","Penguin","Eagle","Falcon","Sparrow","https://images.unsplash.com/photo-1551986782-d0169b3f8fa7?auto=format&fit=crop&w=1200&q=80"],
+["How many legs does a spider have?","8","6","10","12","https://images.unsplash.com/photo-1516703415895-7d4b35b6f4f8?auto=format&fit=crop&w=1200&q=80"],
+["Which metal is liquid at room temperature?","Mercury","Iron","Gold","Copper","https://images.unsplash.com/photo-1531988042231-d39a9cc12a9a?auto=format&fit=crop&w=1200&q=80"],
+["Which is the hottest planet in our solar system?","Venus","Mercury","Mars","Jupiter","https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=1200&q=80"],
+["Which continent is the Sahara Desert in?","Africa","Asia","Australia","Europe","https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80"],
+["What is the largest organ of the human body?","Skin","Heart","Liver","Brain","https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=1200&q=80"],
+["Which animal is known as the King of the Jungle?","Lion","Tiger","Leopard","Bear","https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=1200&q=80"],
+["Which planet has the most famous rings?","Saturn","Earth","Mars","Venus","https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?auto=format&fit=crop&w=1200&q=80"],
+["What is the tallest animal?","Giraffe","Elephant","Camel","Horse","https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=1200&q=80"],
+["Which instrument has black and white keys?","Piano","Drum","Violin","Flute","https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1200&q=80"],
+["Which country gave the Statue of Liberty to the USA?","France","Italy","Canada","Spain","https://images.unsplash.com/photo-1496588152823-86ff7695e68f?auto=format&fit=crop&w=1200&q=80"],
+["What is the largest planet?","Jupiter","Saturn","Earth","Neptune","https://images.unsplash.com/photo-1630694093867-4b947d812bf0?auto=format&fit=crop&w=1200&q=80"],
+["Which animal can sleep while standing?","Horse","Dog","Rabbit","Monkey","https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=1200&q=80"],
+["What is the nearest star to Earth?","The Sun","Sirius","Polaris","Vega","https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=1200&q=80"],
+["Which country has the Great Pyramid of Giza?","Egypt","Mexico","India","Peru","https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=1200&q=80"],
+["How many colors are traditionally in a rainbow?","7","5","6","8","https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&w=1200&q=80"],
+["Which animal is the fastest in the air?","Peregrine falcon","Eagle","Ostrich","Hawk","https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=1200&q=80"],
+["What is the hardest natural substance?","Diamond","Iron","Quartz","Gold","https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80"],
+["Which language has the most native speakers?","Mandarin Chinese","English","Spanish","Arabic","https://images.unsplash.com/photo-1524498250077-390f9e378fc0?auto=format&fit=crop&w=1200&q=80"],
+["Which planet is called Earth's twin because of similar size?","Venus","Mars","Mercury","Saturn","https://images.unsplash.com/photo-1614732414444-096e5f1122d5?auto=format&fit=crop&w=1200&q=80"],
+["What is the main source of energy for Earth?","The Sun","The Moon","Wind","Coal","https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80"],
+["Which animal has a trunk?","Elephant","Rhino","Hippo","Gorilla","https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=1200&q=80"],
+["What is the capital of Japan?","Tokyo","Kyoto","Osaka","Hiroshima","https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&q=80"],
+["Which shape has three sides?","Triangle","Square","Circle","Rectangle","https://images.unsplash.com/photo-1557682250-33bd709cbe85?auto=format&fit=crop&w=1200&q=80"],
+["Which sense uses the ears?","Hearing","Sight","Taste","Smell","https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=80"],
+["Which famous animal is known for its black-and-white stripes?","Zebra","Panda","Skunk","Penguin","https://images.unsplash.com/photo-1526095179574-86e545346ae6?auto=format&fit=crop&w=1200&q=80"],
+["What is the largest hot desert?","Sahara","Gobi","Kalahari","Arabian","https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1200&q=80"],
+["Which device is used to measure temperature?","Thermometer","Barometer","Compass","Speedometer","https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80"],
+["Which planet is famous for its Great Red Spot?","Jupiter","Saturn","Mars","Neptune","https://images.unsplash.com/photo-1630839437035-dac17da580d0?auto=format&fit=crop&w=1200&q=80"],
+["What is the currency of Japan?","Yen","Won","Dollar","Euro","https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1200&q=80"],
+["Which animal is called the ship of the desert?","Camel","Horse","Donkey","Llama","https://images.unsplash.com/photo-1551723270-9f2f4a1d4b1b?auto=format&fit=crop&w=1200&q=80"],
+["Which famous wall is in China?","Great Wall of China","Berlin Wall","Hadrian's Wall","Western Wall","https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=1200&q=80"],
+["How many planets are in our solar system?","8","7","9","10","https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1200&q=80"],
+["Which food is traditionally made from fermented milk?","Yogurt","Bread","Rice","Pasta","https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80"],
+["Which animal is famous for carrying its baby in a pouch?","Kangaroo","Tiger","Fox","Wolf","https://images.unsplash.com/photo-1550973188-db6d6b5e0e5d?auto=format&fit=crop&w=1200&q=80"],
+["Which city is famous for the Eiffel Tower?","Paris","London","Rome","Madrid","https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80"],
+["What do plants absorb from the air for photosynthesis?","Carbon dioxide","Oxygen","Helium","Nitrogen","https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=1200&q=80"],
+["Which is the largest internal organ in the human body?","Liver","Heart","Lung","Kidney","https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&w=1200&q=80"],
+["Which animal is famous for its long neck?","Giraffe","Zebra","Camel","Moose","https://images.unsplash.com/photo-1549366021-9f761d450615?auto=format&fit=crop&w=1200&q=80"],
+["Which star pattern is commonly called the Big Dipper?","Ursa Major","Orion","Cassiopeia","Leo","https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80"],
+["What is the boiling point of water at sea level?","100°C","50°C","80°C","120°C","https://images.unsplash.com/photo-1550572017-edf9c0c2d9a8?auto=format&fit=crop&w=1200&q=80"]
+];
+
+const T={
+en:{start:"START QUIZ 🚀",q:"Question",complete:"Quiz Complete!",correct:"Correct! 🎉",wrong:"Wrong! ❌",timeout:"Time's up! ⏭️",result:"Score",details:"Correct",age:"Please enter an age of 15 or older.",name:"Please enter your name."},
+ur:{start:"کوئز شروع کریں 🚀",q:"سوال",complete:"کوئز مکمل!",correct:"درست! 🎉",wrong:"غلط! ❌",timeout:"وقت ختم! ⏭️",result:"اسکور",details:"درست",age:"براہِ کرم 15 یا اس سے زیادہ عمر درج کریں۔",name:"براہِ کرم اپنا نام درج کریں۔"},
+ar:{start:"ابدأ الاختبار 🚀",q:"السؤال",complete:"اكتمل الاختبار!",correct:"صحيح! 🎉",wrong:"خطأ! ❌",timeout:"انتهى الوقت! ⏭️",result:"النتيجة",details:"صحيح",age:"يرجى إدخال عمر 15 أو أكثر.",name:"يرجى إدخال اسمك."},
+fr:{start:"COMMENCER 🚀",q:"Question",complete:"Quiz terminé !",correct:"Correct ! 🎉",wrong:"Faux ! ❌",timeout:"Temps écoulé ! ⏭️",result:"Score",details:"Correctes",age:"Veuillez entrer un âge de 15 ans ou plus.",name:"Veuillez entrer votre nom."}
+};
+let lang="en",i=0,score=0,answered=false,timer;
+
+function startQuiz(){
+ const n=document.getElementById("name").value.trim(), a=Number(document.getElementById("age").value);
+ lang=document.getElementById("lang").value;
+ if(!n){alert(T[lang].name);return} if(a<15){alert(T[lang].age);return}
+ document.getElementById("start").classList.add("hidden");document.getElementById("quiz").classList.remove("hidden");showQ();
+}
+function showQ(){
+ clearInterval(timer);answered=false;
+ const q=Q[i]; document.getElementById("counter").textContent=`${T[lang].q} ${i+1} / ${Q.length}`;
+ document.getElementById("bar").style.width=((i)/Q.length*100)+"%";
+ document.getElementById("qimg").src=q[5];document.getElementById("question").textContent=q[0];
+ const opts=[q[1],q[2],q[3],q[4]].sort(()=>Math.random()-.5);
+ const box=document.getElementById("options");box.innerHTML="";
+ opts.forEach(x=>{const b=document.createElement("button");b.className="option";b.textContent=x;b.onclick=()=>answer(b,x,q[1]);box.appendChild(b)});
+ document.getElementById("feedback").textContent="";
+ let t=10;document.getElementById("time").textContent=t;
+ timer=setInterval(()=>{t--;document.getElementById("time").textContent=t;if(t<=0){clearInterval(timer);if(!answered){answered=true;document.getElementById("feedback").textContent=T[lang].timeout;disable();setTimeout(next,700)}}},1000);
+}
+function answer(btn,val,correct){
+ if(answered)return;answered=true;clearInterval(timer);
+ if(val===correct){score++;btn.classList.add("correct");document.getElementById("feedback").textContent=T[lang].correct}
+ else{btn.classList.add("wrong");document.getElementById("feedback").textContent=T[lang].wrong;[...document.querySelectorAll(".option")].find(x=>x.textContent===correct)?.classList.add("correct")}
+ disable();setTimeout(next,850);
+}
+function disable(){document.querySelectorAll(".option").forEach(x=>x.disabled=true)}
+function next(){i++;if(i<Q.length)showQ();else finish()}
+function finish(){
+ clearInterval(timer);document.getElementById("quiz").classList.add("hidden");document.getElementById("result").classList.remove("hidden");
+ const n=document.getElementById("name").value;let pct=Math.round(score/Q.length*100);
+ document.getElementById("hello").textContent=`${n}, ${T[lang].complete}`;
+ document.getElementById("score").textContent=`${pct}%`;
+ document.getElementById("details").textContent=`${T[lang].details}: ${score} / ${Q.length} • ${Q.length-score} skipped/wrong`;
+}
+</script>
+</body>
+</html>
